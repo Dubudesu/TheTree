@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://cprv0ihrd0r3e"]
+
+[ext_resource type="Script" path="res://Components/UIComponents/health_bar_component.gd" id="1_2xycs"]
+[ext_resource type="Theme" uid="uid://d2qr614qvy4k3" path="res://Themes/HealthBarComponent.tres" id="1_pck2j"]
+
+[node name="HealthBarComponent" type="Node"]
+script = ExtResource("1_2xycs")
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="ProgressBar" type="ProgressBar" parent="Node2D"]
+offset_left = -20.0
+offset_top = 27.0
+offset_right = 20.0
+offset_bottom = 31.0
+theme = ExtResource("1_pck2j")
+value = 100.0
+show_percentage = false

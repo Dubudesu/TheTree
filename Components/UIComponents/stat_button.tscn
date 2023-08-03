@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://c56mst6okono4"]
+
+[ext_resource type="Texture2D" uid="uid://beqegwb201lm8" path="res://Assets/purple_panel.png" id="1_i5j20"]
+[ext_resource type="Script" path="res://Components/UIComponents/stat_button.gd" id="2_dopwk"]
+
+[sub_resource type="Theme" id="Theme_1of8f"]
+
+[node name="thing" type="TextureRect"]
+offset_right = 256.0
+offset_bottom = 50.0
+theme = SubResource("Theme_1of8f")
+texture = ExtResource("1_i5j20")
+script = ExtResource("2_dopwk")
+
+[node name="cost" type="Button" parent="."]
+layout_mode = 2
+offset_left = 174.0
+offset_right = 252.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 12
+text = "+1
+cost
+"
+
+[node name="Level" type="Label" parent="."]
+layout_mode = 2
+offset_right = 64.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 20
+text = "12"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Stat" type="Label" parent="."]
+layout_mode = 2
+offset_left = 64.0
+offset_right = 172.0
+offset_bottom = 50.0
+text = "damage"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="pressed" from="cost" to="." method="_on_cost_pressed"]

@@ -1,0 +1,164 @@
+[gd_scene load_steps=14 format=3 uid="uid://bh3gqq137uteh"]
+
+[ext_resource type="Texture2D" uid="uid://lh5f852a02vs" path="res://Baddies/Termite_0/termite_0_sheet.png" id="1_lhqho"]
+[ext_resource type="Script" path="res://Baddies/Termite_0/Termite.gd" id="1_p6r5i"]
+[ext_resource type="Script" path="res://Components/HitBox.gd" id="3_oa83o"]
+[ext_resource type="Script" path="res://Components/StatsComponent.gd" id="3_qtu64"]
+[ext_resource type="Script" path="res://Components/HurtBox.gd" id="3_wgkhv"]
+[ext_resource type="Script" path="res://Components/HealthComponent.gd" id="5_yknj1"]
+[ext_resource type="PackedScene" uid="uid://cprv0ihrd0r3e" path="res://Components/UIComponents/health_bar_component.tscn" id="6_kgxe7"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_72wdu"]
+height = 44.0
+
+[sub_resource type="Animation" id="Animation_0bako"]
+resource_name = "Attack"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [4, 3]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("HitBox/CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.2, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="Animation" id="Animation_3dkx3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [6]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("HitBox/CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_uivb4"]
+resource_name = "Walk"
+length = 0.3
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [6, 7, 8]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xwx24"]
+_data = {
+"Attack": SubResource("Animation_0bako"),
+"RESET": SubResource("Animation_3dkx3"),
+"Walk": SubResource("Animation_uivb4")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_3twka"]
+radius = 8.0
+height = 18.0
+
+[node name="Termite" type="CharacterBody2D" groups=["Baddies"]]
+collision_layer = 2
+collision_mask = 3
+input_pickable = true
+script = ExtResource("1_p6r5i")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -3)
+texture = ExtResource("1_lhqho")
+hframes = 3
+vframes = 3
+frame = 6
+metadata/_edit_lock_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_72wdu")
+metadata/_edit_lock_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_xwx24")
+}
+
+[node name="StatsComponent" type="Node" parent="."]
+script = ExtResource("3_qtu64")
+damage = 45
+health = 15
+
+[node name="HealthComponent" type="Node2D" parent="."]
+script = ExtResource("5_yknj1")
+
+[node name="HealthBarTransform" type="RemoteTransform2D" parent="."]
+remote_path = NodePath("../HealthBarComponent/Node2D")
+update_rotation = false
+update_scale = false
+
+[node name="HealthBarComponent" parent="." instance=ExtResource("6_kgxe7")]
+
+[node name="ProgressBar" parent="HealthBarComponent/Node2D" index="0"]
+visible = false
+
+[node name="HitBox" type="Area2D" parent="."]
+position = Vector2(0, -21)
+script = ExtResource("3_oa83o")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+shape = SubResource("CapsuleShape2D_3twka")
+disabled = true
+metadata/_edit_lock_ = true
+
+[node name="HurtBox" type="Area2D" parent="." node_paths=PackedStringArray("health_component")]
+script = ExtResource("3_wgkhv")
+health_component = NodePath("../HealthComponent")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_72wdu")
+metadata/_edit_lock_ = true
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
+[connection signal="dead" from="HealthComponent" to="." method="_on_health_component_dead"]
+[connection signal="health_changed" from="HealthComponent" to="HealthBarComponent" method="_on_health_component_health_changed"]
+[connection signal="health_setup" from="HealthComponent" to="HealthBarComponent" method="_on_health_component_health_setup"]
+
+[editable path="HealthBarComponent"]
